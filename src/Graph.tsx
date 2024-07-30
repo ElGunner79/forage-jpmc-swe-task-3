@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Table } from '@finos/perspective';
 import { ServerRespond } from './DataStreamer';
-import { DataManipulator } from './DataManipulator';
+import { DataManipulator, Row } from './DataManipulator';
 import './Graph.css';
 
 interface IProps {
@@ -11,6 +11,7 @@ interface IProps {
 interface PerspectiveViewerElement extends HTMLElement {
   load: (table: Table) => void,
 }
+
 class Graph extends Component<IProps, {}> {
   table: Table | undefined;
 
@@ -39,13 +40,12 @@ class Graph extends Component<IProps, {}> {
       // Load the `table` in the `<perspective-viewer>` DOM reference.
       elem.load(this.table);
       elem.setAttribute('view', 'y_line');
-      elem.setAttribute('column-pivots', '["stock"]');
       elem.setAttribute('row-pivots', '["timestamp"]');
       elem.setAttribute('columns', '["ratio", "lower_bound", "upper_bound", "trigger_alert"]');
       elem.setAttribute('aggregates', JSON.stringify({
         price_abc: 'avg',
         price_def: 'avg',
-        ratio:'avg',
+        ratio: 'avg',
         timestamp: 'distinct count',
         upper_bound: 'avg',
         lower_bound: 'avg',
@@ -58,7 +58,7 @@ class Graph extends Component<IProps, {}> {
     if (this.table) {
       this.table.update([
         DataManipulator.generateRow(this.props.data),
-      ]);
+      ] as any); // Cast to any to bypass type issue
     }
   }
 }
